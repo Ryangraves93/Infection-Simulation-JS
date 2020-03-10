@@ -1,5 +1,5 @@
 let molecules = [];
-const numOfMolecules = 15;
+const numOfMolecules = 50;
 const gridCols = 5;
 const gridRows = 5;
 let gridWidth;
@@ -45,6 +45,8 @@ function draw() {
 
 }
 
+
+
 function make2dArray() {
     gridMolecules = [];
 
@@ -81,7 +83,7 @@ function gridifyBalls() {
 
 function checkIntersections() {
 
-
+    
     for (let i = 0; i < gridRows; i++) {
         for (let j = 0; j < gridCols; j++) {
             let tempArray = gridMolecules[i][j];

@@ -6,7 +6,7 @@ class Molecule {
         this.arrayPosition = _i;
         this.radius = random(radiusMin, radiusMax);
         this.intersecting = false;
-        this.bounce = false;
+        this.bounce = true;
         
         this.top = false;
         this.bottom = false;
@@ -54,17 +54,43 @@ class Molecule {
             this.velocity.y = this.velocity.y * -1
         }
     }
-
+    
+     breakApart(molecule)
+        {
+    
+    var tempVec = p5.Vector.sub(this.position,molecules[molecule].position);
+    var heading = tempVec.heading();
+    var moveDis = abs(tempVec.mag() - this.radius - molecules[molecule].radius);
+    
+    var dis = dist(this.position.x,this.position.y,molecules[molecule].position.x,molecules[molecule].position.y);
+    
+    var dx = Math.cos(heading) * (moveDis/2);
+    
+    var dy = Math.sin(heading) * (moveDis/2);
+    
+    this.position.x += dx;
+    this.position.y += dx;
+    
+    molecules[molecule].position.x -= dy;
+    molecules[molecule].position.y -= dy;
+            
+            }
+    
     checkIntersecting(_indexValue) {
-
+        
+        
         let dist = p5.Vector.sub(this.position, molecules[_indexValue].position);
         //console.log(dist)
         if (dist.mag() < this.radius + molecules[_indexValue].radius) {
             //console.log("changed")
             this.intersecting = true;
             molecules[_indexValue].intersecting = true;
+     
+                  
+                
+            
             if (this.bounce) {
-
+                
                 let dx = this.position.x - molecules[_indexValue].position.x;
                 let dy = this.position.y - molecules[_indexValue].position.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -85,6 +111,7 @@ class Molecule {
                 this.velocity.y -= dvy;
                 molecules[_indexValue].velocity.x += dvx;
                 molecules[_indexValue].velocity.y += dvy;
+                this.breakApart(_indexValue);
             }
         }
 
