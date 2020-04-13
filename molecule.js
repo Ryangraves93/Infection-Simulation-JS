@@ -50,7 +50,7 @@ class Molecule {
             this.velocity.x = this.velocity.x * -1
         }
 
-        if (this.position.y < this.radius || this.position.y > height - this.radius) {
+        if (this.position.y < this.radius || this.position.y > height - visual - this.radius) {
             this.velocity.y = this.velocity.y * -1
         }
     }
@@ -113,8 +113,10 @@ class Molecule {
                 molecules[_indexValue].velocity.y += dvy;
                 this.breakApart(_indexValue);
             }
+            
+            return true;
         }
-
+        
     }
 
     reset() {
@@ -124,6 +126,96 @@ class Molecule {
         this.bottom = false;
         this.right = false; 
         this.left = false;
+    }
+}
+  class Healthy extends Molecule {
+    constructor(_i) {
+        super(_i);
+        
+    
+    }
+      
+      CheckHealth(_indexValue){
+          let otherMolecule = molecules[_indexValue];
+          if (otherMolecule.constructor.name == "Infector"){
+              console.log("Shit Happens");
+              
+              molecules[this.arrayPosition] = new Infector(this.arrayPosition);
+              molecules[this.arrayPosition].position = this.position;
+              molecules[this.arrayPosition].velocity = this.velocity;
+              molecules[this.arrayPosition].radius = this.radius;
+          }
+      }
+    
+      render() {
+        //noStroke()
+        stroke(200, 200, 200);
+        strokeWeight(3)
+
+        if (this.intersecting) {
+            fill(255, 50, 0, 255);
+        }
+        else {
+            fill(0, 50, 50, 125);
+        }
+
+        push()
+        translate(this.position.x, this.position.y);
+
+        ellipse(0, 0, this.radius * 2, this.radius * 2);
+
+        noStroke();
+        fill(0, 255, 255, 255);
+        textSize(30);
+        textAlign(CENTER, CENTER);
+        text(this.arrayPosition, 0, 0);
+        pop();
+    }
+
+}
+
+class Infector extends Molecule {
+    constructor(_i) {
+        super(_i);
+        
+    
+    }
+    
+    CheckHealth(_indexValue){
+          let otherMolecule = molecules[_indexValue];
+          if (otherMolecule.constructor.name == "Healthy"){
+              console.log("Shit Happens");
+              molecules[otherMolecule.arrayPosition] = new Infector(otherMolecule.arrayPosition);
+              molecules[otherMolecule.arrayPosition].position = otherMolecule.position;
+              molecules[otherMolecule.arrayPosition].velocity = otherMolecule.velocity;
+              molecules[otherMolecule.arrayPosition].radius = otherMolecule.radius;
+          }
+      }
+    
+    
+      render() {
+        //noStroke()
+        stroke(200, 200, 200);
+        strokeWeight(3)
+
+        if (this.intersecting) {
+            fill(255, 100, 0, 255);
+        }
+        else {
+            fill(0, 50, 50, 125);
+        }
+
+        push()
+        translate(this.position.x, this.position.y);
+
+        ellipse(0, 0, this.radius * 2, this.radius * 2);
+
+        noStroke();
+        fill(255, 255, 255, 255);
+        textSize(30);
+        textAlign(CENTER, CENTER);
+        text(this.arrayPosition, 0, 0);
+        pop();
     }
 
 }

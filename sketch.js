@@ -7,6 +7,10 @@ let gridHeight;
 let intersectCount = 0;
 let radiusMin = 40;
 let radiusMax = 40;
+let percentOfInfect = 25;
+
+
+let visualHeight = 150;
 
 let gridMolecules = [];
 
@@ -16,8 +20,21 @@ function setup() {
     background(127);
 
     for (let i = 0; i < numOfMolecules; i++) {
-        molecules.push(new Molecule(i));
+        let randomNum = random();
+        if (randomNum < percentOfInfect/100)
+            {
+                molecules.push(new Infector(i));        
+            }
+        else
+            {
+                molecules.push(new Healthy(i));        
+            }
+        
     }
+    
+//    for (let i = 0; i < numOfMolecules/2; i++) {
+//        molecules.push(new Molecule(i));
+//    }
 
     gridWidth = width / gridCols;
     gridHeight = height / gridRows;
@@ -45,8 +62,21 @@ function draw() {
 
 }
 
-
-
+function renderGraph (){
+    let Healthy = molecules.filter(function (molecule){
+      return.molecule.constructor.name === "Healthy";
+                                  }
+});
+    
+    let infected = molecules.filter(function (molecule){
+        return.molecule.constructor.name === "Infected";
+    });
+    
+    let healthyHeight = map(healthy.length, 0 , numOfMolecules, 0 , visualHeight);
+    let infectedHeight = map(infected.length, 0 , numOfMolecules, 0 , visualHeight);
+    
+    
+}
 function make2dArray() {
     gridMolecules = [];
 
@@ -64,7 +94,7 @@ function gridifyBalls() {
     console.log(Inum);
     
     let gridX = width/Inum;
-    let gridY = height/Jnum;
+    let gridY = (height - visualHeight)/Jnum;
     
     molecules.forEach(function (molecule, index)
     {
@@ -93,7 +123,11 @@ function checkIntersections() {
                     for (let w = z + 1; w < numInArray; w++) {
                         let indexValue01 = tempArray[z];
                         let indexValue02 = tempArray[w];
-                        molecules[indexValue01].checkIntersecting(indexValue02)
+                        if(molecules[indexValue01].checkIntersecting(indexValue02)){
+                            molecules[indexValue01].CheckHealth(indexValue02);
+                            console.log("FUCK MICROSOFT TEAMS");
+
+                        }
                     }
                 }
             }
