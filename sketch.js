@@ -1,5 +1,5 @@
 let molecules = [];
-const numOfMolecules = 10;
+const numOfMolecules = 20;
 const gridCols = 4;
 const gridRows = 4;
 let gridWidth;
@@ -17,7 +17,7 @@ let gridMolecules = [];
 
 function setup() {
    
-    createCanvas(800, 800);
+    createCanvas(1000, 1000);
     pixelDensity(1)
     background(127);
 
@@ -62,7 +62,6 @@ function draw() {
     drawGrid();
    
     renderGrid();
-    rect(35,35,20,20);
 
 }
 

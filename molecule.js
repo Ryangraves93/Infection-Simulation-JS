@@ -26,12 +26,10 @@ class Molecule {
         //stroke(200, 200, 200);
         //strokeWeight(3)
 
-        if (this.intersecting) {
-            fill(255, 50, 0, 255);
-        }
-        else {
+   
+   
             fill(0, 50, 50, 125);
-        }
+        
 
         push()
         translate(this.position.x, this.position.y);
@@ -109,19 +107,19 @@ class Molecule {
         
         if (this.position.x < otherMolecule.position.x - (this.rectWidth/2)){ 
             testX = otherMolecule.position.x - (this.rectWidth/2);
-            console.log("Left") // Left Edge 
+            //console.log("Left") // Left Edge 
             left = true;}
         else if ( this.position.x > otherMolecule.position.x + (this.rectWidth/2)){
             testX = otherMolecule.position.x + (this.rectWidth/2);
-            console.log("Right")
+            //console.log("Right")
             right = true;} // Right Edge
         if (this.position.y < otherMolecule.position.y - (this.rectHeight/2)){
             testY = otherMolecule.position.y - (this.rectHeight/2);
-            console.log("Top")
+            //console.log("Top")
             top = true;} // Top Edge
         else if(this.position.y > otherMolecule.position.y +  (this.rectHeight/2)){
             testY = otherMolecule.position.y + (this.rectHeight/2);
-            console.log("Bottom")
+            //console.log("Bottom")
             bottom = true;} // Bottom Edge
         
 
@@ -136,7 +134,7 @@ class Molecule {
                  }
                  else if (left == true)
                  {
-                    this.velocity.x = this.velocity.x * 1
+                    this.velocity.x = this.velocity.x * -1
                  }
                  else if (top == true)
                  {
@@ -144,14 +142,15 @@ class Molecule {
                  }
                  else if (bottom == true)
                  {
-                    this.velocity.y = this.velocity.y * 1
+                    this.velocity.y = this.velocity.y * -1
                  }
              }
-      
+             //this.breakApart(_indexValue);
         return false;
         }
         else if (this.quarentined)
         {
+            molecules[_indexValue].checkIntersecting(this.arrayPosition);
             return false;
         }
            else {
@@ -244,12 +243,9 @@ class Healthy extends Molecule {
         stroke(200, 200, 200);
         strokeWeight(3)
 
-        if (this.intersecting) {
-            fill(255, 50, 0, 255);
-        }
-        else {
+       
             fill(0, 50, 50, 125);
-        }
+        
         //recovery()
         push()
         translate(this.position.x, this.position.y);
@@ -274,10 +270,11 @@ class Infector extends Molecule {
         super(_i);
         this.infected = true;
         this.recovered = false;
-        //this.recovery();
+        this.recovery(this.infectedDuration);
         this.arrayPosition = _i;
        // this.timeoutHandle = window.setTimeout(this.recovery);
         this.quarentined = true;
+        this.infectedDuration = 10000;
     }
     
 
@@ -302,15 +299,14 @@ class Infector extends Molecule {
 
     }
 
-    recovery(){
-        setTimeout(function recovery() {
-            console.log(molecules[this.arrayPosition])
+    recovery(duration){
+        setTimeout(function recovery(duration) {
             
          molecules[this.arrayPosition] = new Recovered(this.arrayPosition); 
          molecules[this.arrayPosition].position = this.position;  
          molecules[this.arrayPosition].velocity =this.velocity;
          molecules[this.arrayPosition].radius =this.radius; 
-        }.bind(this), 10000)
+        }.bind(this),duration)
    
         
     }
@@ -321,12 +317,10 @@ class Infector extends Molecule {
         strokeWeight(3)
 
 
-        if (this.intersecting) {
-            fill(255, 100, 0, 255);
-        }
-        else {
+       
+    
             fill(0, 50, 50, 125);
-        }
+        
 
         push()
         translate(this.position.x, this.position.y);
@@ -370,12 +364,9 @@ class Recovered extends Molecule {
            strokeWeight(3)
    
    
-           if (this.intersecting) {
-               fill(255, 100, 0, 255);
-           }
-           else {
+          
                fill(0, 50, 50, 125);
-           }
+           
    
            push()
            translate(this.position.x, this.position.y);
