@@ -126,7 +126,7 @@ class Molecule {
              var distX = this.position.x - testX;
              var distY = this.position.y - testY;
              var distance = sqrt((distX*distX) + (distY*distY));
-            console.log(distance);
+            //console.log(distance);
              if (distance <= this.radius){
                  if(right == true)
                  {
@@ -270,11 +270,12 @@ class Infector extends Molecule {
         super(_i);
         this.infected = true;
         this.recovered = false;
+        this.infectedDuration = 10000;
         this.recovery(this.infectedDuration);
         this.arrayPosition = _i;
        // this.timeoutHandle = window.setTimeout(this.recovery);
         this.quarentined = true;
-        this.infectedDuration = 10000;
+        
     }
     
 
@@ -299,17 +300,22 @@ class Infector extends Molecule {
 
     }
 
-    recovery(duration){
-        setTimeout(function recovery(duration) {
-            
-         molecules[this.arrayPosition] = new Recovered(this.arrayPosition); 
-         molecules[this.arrayPosition].position = this.position;  
-         molecules[this.arrayPosition].velocity =this.velocity;
-         molecules[this.arrayPosition].radius =this.radius; 
-        }.bind(this),duration)
+    recovery(infectedDuration)
+    {
+        const app = this;
+        setTimeout(function (duration) {
+        console.log("Start"); 
+        console.log(this.infectedDuration);
+         molecules[app.arrayPosition] = new Recovered(app.arrayPosition); 
+         molecules[app.arrayPosition].position = app.position;  
+         molecules[app.arrayPosition].velocity =app.velocity;
+         molecules[app.arrayPosition].radius =app.radius; 
+         
+        },app.infectedDuration)
+
    
         
-    }
+    }//setTimeout(function (duration) 
     render() {
 
         fill(51);
