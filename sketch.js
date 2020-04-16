@@ -1,21 +1,23 @@
 let molecules = [];
-const numOfMolecules = 50;
-const gridCols = 5;
-const gridRows = 5;
+const numOfMolecules = 10;
+const gridCols = 4;
+const gridRows = 4;
 let gridWidth;
 let gridHeight;
 let intersectCount = 0;
-let radiusMin = 40;
+let radiusMin = 20;
 let radiusMax = 40;
 let percentOfInfect = 25;
+     
+var time;
+let rectCorner;
 
-
-let visualHeight = 150;
 
 let gridMolecules = [];
 
 function setup() {
-    createCanvas(1000, 1000);
+   
+    createCanvas(800, 800);
     pixelDensity(1)
     background(127);
 
@@ -23,7 +25,8 @@ function setup() {
         let randomNum = random();
         if (randomNum < percentOfInfect/100)
             {
-                molecules.push(new Infector(i));        
+                molecules.push(new Infector(i));
+                 
             }
         else
             {
@@ -45,7 +48,8 @@ function setup() {
 }
 
 function draw() {
-
+    time = millis();
+    //console.log(time * 1000);
     background(127);
 
     make2dArray();
@@ -58,25 +62,25 @@ function draw() {
     drawGrid();
    
     renderGrid();
-    
+    rect(35,35,20,20);
 
 }
 
-function renderGraph (){
-    let Healthy = molecules.filter(function (molecule){
-      return.molecule.constructor.name === "Healthy";
-                                  }
-});
+// function renderGraph (){
+//     let Healthy = molecules.filter(function (molecule){
+//       return.molecule.constructor.name === "Healthy";
+//                                   }
+// });
     
-    let infected = molecules.filter(function (molecule){
-        return.molecule.constructor.name === "Infected";
-    });
+//     let infected = molecules.filter(function (molecule){
+//         return.molecule.constructor.name === "Infected";
+//     });
     
-    let healthyHeight = map(healthy.length, 0 , numOfMolecules, 0 , visualHeight);
-    let infectedHeight = map(infected.length, 0 , numOfMolecules, 0 , visualHeight);
+//     let healthyHeight = map(healthy.length, 0 , numOfMolecules, 0 , visualHeight);
+//     let infectedHeight = map(infected.length, 0 , numOfMolecules, 0 , visualHeight);
     
     
-}
+// }
 function make2dArray() {
     gridMolecules = [];
 
@@ -91,10 +95,10 @@ function make2dArray() {
 function gridifyBalls() {
     let Inum = ceil(sqrt(numOfMolecules));
     let Jnum = Inum;
-    console.log(Inum);
+
     
     let gridX = width/Inum;
-    let gridY = (height - visualHeight)/Jnum;
+    let gridY = height/Jnum;
     
     molecules.forEach(function (molecule, index)
     {
@@ -125,7 +129,6 @@ function checkIntersections() {
                         let indexValue02 = tempArray[w];
                         if(molecules[indexValue01].checkIntersecting(indexValue02)){
                             molecules[indexValue01].CheckHealth(indexValue02);
-                            console.log("FUCK MICROSOFT TEAMS");
 
                         }
                     }
@@ -238,8 +241,7 @@ function renderGrid() {
 
     molecules.forEach(function (molecule) {
          molecule.step();
-        molecule.checkEdges();
-       
+        molecule.checkEdges(); 
         molecule.render();
 
     });
