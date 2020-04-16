@@ -2,7 +2,7 @@ class Molecule {
     constructor(_i) {
         //this.position = createVector(random(radiusMax, width - radiusMax), random(radiusMax, height - radiusMax));
         this.position = createVector(0, 0);
-        this.velocity = createVector(random(-2, 2), random(-2, 2));
+        this.velocity = createVector(random(-1, 1), random(-1, 1));
         this.arrayPosition = _i;
         this.radius = random(radiusMin, radiusMax);
         this.intersecting = false;
@@ -12,8 +12,8 @@ class Molecule {
         this.bottom = false;
         this.right = false;
         this.left = false;
-        this.rectWidth = 65;
-        this.rectHeight = 65;
+        this.rectWidth = this.radius * 2;
+        this.rectHeight = this.radius * 2;
 
 
 
@@ -22,12 +22,6 @@ class Molecule {
     }
 
     render() {
-        //noStroke()
-        //stroke(200, 200, 200);
-        //strokeWeight(3)
-
-   
-   
             fill(0, 50, 50, 125);
         
 
@@ -45,22 +39,15 @@ class Molecule {
     }
 
     step() {
-         if (this.infected == false) {
-            this.position.add(this.velocity);
-        }
-        else if (this.infected == true) {
+         if (this.quarentined == true) {
             this.quarentine();
         }
+        else {
+            this.position.add(this.velocity);
+        }
     }
 
-    quarentine() {
-        rectMode(CENTER);
-       
-        rect(this.position.x, this.position.y, this.rectHeight, this.rectWidth);
-        this.rectCorner = (this.position.x - (this.rectHeight / 2)) - (this.rectWidth / 2);
-        this.quarentined = true;
-
-    }
+   
 
     checkEdges() {
         if (this.position.x < this.radius || this.position.x > width - this.radius) {
@@ -254,9 +241,9 @@ class Healthy extends Molecule {
         ellipse(0, 0, this.radius * 2, this.radius * 2);
         noStroke();
         fill(255, 255, 255, 255);
-        textSize(30);
-        textAlign(CENTER, CENTER);
-        text(this.arrayPosition, 0, 0);
+        // textSize(30);
+        // textAlign(CENTER, CENTER);
+        //text(this.arrayPosition, 0, 0);
         pop();
 
 
@@ -270,19 +257,35 @@ class Infector extends Molecule {
         super(_i);
         this.infected = true;
         this.recovered = false;
-        this.infectedDuration = 10000;
-        this.recovery(this.infectedDuration);
+        this.infectedDuration = random(6000,10000);
+        this.timeToInfection = random(2000,4000);
         this.arrayPosition = _i;
        // this.timeoutHandle = window.setTimeout(this.recovery);
-        this.quarentined = true;
+       this.timeToQuarentine();
+        this.quarentined = false;
+        //this.recovery();
         
     }
-    
 
+    step() {
+        if (this.quarentined) {
+           this.quarentine();
+       }
+       else {
+           this.position.add(this.velocity);
+       }
+   }
+    quarentine() {
+        console.log("Twt");
+        rectMode(CENTER);
+        rect(this.position.x, this.position.y, this.rectHeight, this.rectWidth);
+        this.rectCorner = (this.position.x - (this.rectHeight / 2)) - (this.rectWidth / 2);
+        this.recovery();
+    }
 
     CheckHealth(_indexValue) {
         let otherMolecule = molecules[_indexValue];
-        if (!this.quarentine)
+        if (!this.quarentined)
         {
         if (otherMolecule.constructor.name == "Healthy") {
             molecules[otherMolecule.arrayPosition] = new Infector(otherMolecule.arrayPosition);
@@ -293,14 +296,19 @@ class Infector extends Molecule {
         }
     }
 
-      test(){
+    timeToQuarentine()
+    {
+        const app = this;
+        setTimeout(function () {
+        this.quarentined = true;
+         console.log("Time to qurentine" + this.quarentined);
+        },app.timeToInfection)
 
-        this.radius = 20;
-        this.recovered = true;
-
+        
     }
 
-    recovery(infectedDuration)
+
+    recovery()
     {
         const app = this;
         setTimeout(function (duration) {
@@ -312,22 +320,16 @@ class Infector extends Molecule {
          molecules[app.arrayPosition].radius =app.radius; 
          
         },app.infectedDuration)
+    }
 
-   
-        
-    }//setTimeout(function (duration) 
+
     render() {
-
+  
         fill(51);
         stroke(200, 200, 200);
         strokeWeight(3)
-
-
-       
-    
-            fill(0, 50, 50, 125);
+        fill(0, 50, 50, 125);
         
-
         push()
         translate(this.position.x, this.position.y);
         noStroke();
@@ -335,9 +337,7 @@ class Infector extends Molecule {
         ellipse(0, 0, this.radius * 2, this.radius * 2);
         noStroke();
         fill(255, 255, 255, 255);
-        textSize(30);
-        textAlign(CENTER, CENTER);
-        text(this.arrayPosition, 0, 0);
+
         pop();
     }
 
@@ -358,10 +358,10 @@ class Recovered extends Molecule {
         if (otherMolecule.constructor.name == "Healthy") {
             console.log("Have a good day my dude you have not been inflected");
         }
-        else if (otherMolecule.constructor.name == "Infector"){
-            window.clearTimeout(timeoutHandle);
-            this.recovery();
-        }
+        // else if (otherMolecule.constructor.name == "Infector"){
+        //     window.clearTimeout(timeoutHandle);
+        //     this.recovery();
+        // }
     }
 
     render() {
@@ -381,9 +381,6 @@ class Recovered extends Molecule {
            ellipse(0, 0, this.radius * 2, this.radius * 2);
            noStroke();
            fill(255, 255, 255, 255);
-           textSize(30);
-           textAlign(CENTER, CENTER);
-           text(this.arrayPosition, 0, 0);
            pop();
        }
    

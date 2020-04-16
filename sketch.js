@@ -1,18 +1,18 @@
 let molecules = [];
-const numOfMolecules = 20;
+const numOfMolecules = 60;
 const gridCols = 4;
 const gridRows = 4;
 let gridWidth;
 let gridHeight;
 let intersectCount = 0;
-let radiusMin = 20;
-let radiusMax = 40;
+let radiusMin = 10;
+let radiusMax = 20;
 let percentOfInfect = 25;
-     
+var intialInfection = false;     
 var time;
 let rectCorner;
 
-
+let bool = false;
 let gridMolecules = [];
 
 function setup() {
@@ -23,10 +23,11 @@ function setup() {
 
     for (let i = 0; i < numOfMolecules; i++) {
         let randomNum = random();
+        if(bool == false){
         if (randomNum < percentOfInfect/100)
             {
                 molecules.push(new Infector(i));
-                 
+                 bool = true;
             }
         else
             {
@@ -34,6 +35,10 @@ function setup() {
             }
         
     }
+    else {
+        molecules.push(new Healthy(i));   
+    }
+}
     
 //    for (let i = 0; i < numOfMolecules/2; i++) {
 //        molecules.push(new Molecule(i));
@@ -164,12 +169,12 @@ function drawGrid() {
 
             noStroke();
             fill(255, 255, 255, 255);
-            textSize(16);
-            textAlign(RIGHT);
-            text(numArray, j * gridWidth + gridWidth - 5, i * gridHeight + 20);
+            //textSize(16);
+            //textAlign(RIGHT);
+            //text(numArray, j * gridWidth + gridWidth - 5, i * gridHeight + 20);
 
             fill(255, 50, 0, 150);
-            text(intersectCount, j * gridWidth + gridWidth - 5, i * gridHeight + gridHeight - 5);
+            //text(intersectCount, j * gridWidth + gridWidth - 5, i * gridHeight + gridHeight - 5);
 
         }
     }
