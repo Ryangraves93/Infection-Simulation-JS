@@ -1,60 +1,96 @@
 let molecules = [];
-const numOfMolecules = 60;
+var numOfMolecules = 10;
 const gridCols = 4;
 const gridRows = 4;
 let gridWidth;
 let gridHeight;
 let intersectCount = 0;
 let radiusMin = 10;
-let radiusMax = 20;
+let radiusMax = 15;
 let percentOfInfect = 25;
 var intialInfection = false;     
 var time;
 let rectCorner;
-
+let canvasHeight = 1000;
 let bool = false;
 let gridMolecules = [];
 
+let visualHeight = 200;
+let graphHeight = 150;
+let graphOffset = 275;
+let visualData = [];
+let graphTopOffset = 55;
+let graphWidth = 300;
+var numOfInfected = 3;
+let num = 100;
+
+var myNumber = 40;
+//let myColor = color(255, 0, 0);
+var myChoice = ['one', 'two', 'three'];
+
+var isRyanDumb = true;
+
+let gui
+
+var test;
+
+
 function setup() {
-   
-    createCanvas(1000, 1000);
+    gui = createGui('My awesome GUI');
+
+    gui.addGlobals('numOfInfected', 'numOfMolecules', 'myChoice', 'isRyanDumb');
+    
+    createCanvas(canvasHeight, 1000);
     pixelDensity(1)
     background(127);
 
-    for (let i = 0; i < numOfMolecules; i++) {
-        let randomNum = random();
-        if(bool == false){
-        if (randomNum < percentOfInfect/100)
-            {
-                molecules.push(new Infector(i));
-                 bool = true;
-            }
-        else
-            {
-                molecules.push(new Healthy(i));        
-            }
-        
-    }
-    else {
-        molecules.push(new Healthy(i));   
-    }
-}
+   init();
     
 //    for (let i = 0; i < numOfMolecules/2; i++) {
 //        molecules.push(new Molecule(i));
 //    }
 
     gridWidth = width / gridCols;
-    gridHeight = height / gridRows;
+    gridHeight = (height - graphHeight)/ gridRows;
     smooth();
     //noLoop();
-    gridifyBalls();
+    // gridifyBalls();
 
 }
 
+function init() {
+    console.log('running init!!')
+    test = numOfInfected;
+    bool = false;
+    molecules = []
+    console.log('big baby boy viv', molecules)
+    for (let i = 0; i < numOfMolecules; i++) {
+        let randomNum = random();
+        if(bool == false){
+        if (randomNum < percentOfInfect/100)
+            {
+                molecules.push(new Infector(i));
+                if (i > numOfInfected)
+                {
+                    bool = true;
+                }
+            }
+        else
+            {
+                molecules.push(new Healthy(i));        
+            }
+        
+        }
+    else {
+        molecules.push(new Healthy(i));   
+    }
+    }
+    gridifyBalls();
+}
+
 function draw() {
-    time = millis();
-    //console.log(time * 1000);
+    if (numOfMolecules !== molecules.length || numOfInfected !== test) init()
+
     background(127);
 
     make2dArray();
@@ -63,10 +99,9 @@ function draw() {
      
     splitIntoGrids();
     checkIntersections();
-    
     drawGrid();
-   
     renderGrid();
+    renderGraph();
 
 }
 
@@ -102,7 +137,7 @@ function gridifyBalls() {
 
     
     let gridX = width/Inum;
-    let gridY = height/Jnum;
+    let gridY = (height - graphHeight)/Jnum;
     
     molecules.forEach(function (molecule, index)
     {
@@ -148,9 +183,11 @@ function drawGrid() {
         for (let j = 0; j < gridCols; j++) {
             noFill();
             strokeWeight(1)
-            stroke(0, 244, 0, 50);
+            stroke(0, 100, 0, 50);
+            rectMode(CORNER);
             rect(j * gridWidth, i * gridHeight, gridWidth, gridHeight);
-
+            // console.log("Grid width" + gridWidth);
+            // console.log("Grid Height" + gridHeight);
             let intersectCount = 0;
 
             let tempArray = gridMolecules[i][j];
@@ -166,15 +203,6 @@ function drawGrid() {
             if (numArray == 0) {
                 numArray = ""
             }
-
-            noStroke();
-            fill(255, 255, 255, 255);
-            //textSize(16);
-            //textAlign(RIGHT);
-            //text(numArray, j * gridWidth + gridWidth - 5, i * gridHeight + 20);
-
-            fill(255, 50, 0, 150);
-            //text(intersectCount, j * gridWidth + gridWidth - 5, i * gridHeight + gridHeight - 5);
 
         }
     }
@@ -259,4 +287,45 @@ function resetBalls() {
         molecules[i].reset();
     }
    
+}
+
+function renderGraph() {
+    let healthy = molecules.filter(function (molecule){
+        return molecule.constructor.name === "Healthy";
+    });
+
+    let infected = molecules.filter(function (molecule){
+        return molecule.constructor.name === "Infector";
+    });
+
+    let healthyHeight = map(healthy.length,0,numOfMolecules,0, graphHeight);
+    let infectedHeight = map(infected.length,0,numOfMolecules,0, graphHeight);
+
+    if(visualData.length > graphWidth)
+    {
+        visualData.shift();
+    }
+
+    visualData.push({
+        healthy:healthyHeight, 
+        infected: infectedHeight
+    });
+
+    push();
+    translate(0,height - visualHeight)
+  
+    visualData.forEach(function (data,index) {  
+        fill(255,0,0);
+        noStroke();    
+        rectMode(CORNER);
+        rect(graphOffset + index,graphTopOffset +data.healthy,1,data.infected);
+
+        fill(0,255,0);
+        noStroke();
+        rect(graphOffset + index,graphTopOffset, 1,data.healthy);
+    });
+   
+    pop();
+
+
 }

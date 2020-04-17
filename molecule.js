@@ -17,6 +17,7 @@ class Molecule {
 
 
 
+
         this.infected = false;
         this.quarentined = false;
     }
@@ -46,16 +47,13 @@ class Molecule {
             this.position.add(this.velocity);
         }
     }
-
-   
-
     checkEdges() {
         if (this.position.x < this.radius || this.position.x > width - this.radius) {
 
             this.velocity.x = this.velocity.x * -1
         }
 
-        if (this.position.y < this.radius || this.position.y > height - this.radius) {
+        if (this.position.y < this.radius || this.position.y > height - graphHeight - this.radius) {
             this.velocity.y = this.velocity.y * -1
         }
 
@@ -179,22 +177,6 @@ class Molecule {
             }
 
           }
-        
-    
-    // if(this.quarentined)
-    // {
-    //     //console.log(this.rectCorner);
-    //     {
-    //       
-
-    //             }
-    //         }
-    //     }
-    // }
-
-
-
-
     reset() {
 
         this.intersecting = false;
@@ -232,8 +214,7 @@ class Healthy extends Molecule {
 
        
             fill(0, 50, 50, 125);
-        
-        //recovery()
+    
         push()
         translate(this.position.x, this.position.y);
         noStroke();
@@ -241,9 +222,6 @@ class Healthy extends Molecule {
         ellipse(0, 0, this.radius * 2, this.radius * 2);
         noStroke();
         fill(255, 255, 255, 255);
-        // textSize(30);
-        // textAlign(CENTER, CENTER);
-        //text(this.arrayPosition, 0, 0);
         pop();
 
 
@@ -258,15 +236,16 @@ class Infector extends Molecule {
         this.infected = true;
         this.recovered = false;
         this.infectedDuration = random(6000,10000);
-        this.timeToInfection = random(2000,4000);
+        this.timeToInfection = random(1000,4000);
         this.arrayPosition = _i;
-       // this.timeoutHandle = window.setTimeout(this.recovery);
+        this.dateNow = new Date().getTime();
        this.timeToQuarentine();
         this.quarentined = false;
-        //this.recovery();
         
     }
-
+    lerp(){
+        
+    }
     step() {
         if (this.quarentined) {
            this.quarentine();
@@ -276,9 +255,8 @@ class Infector extends Molecule {
        }
    }
     quarentine() {
-        console.log("Twt");
         rectMode(CENTER);
-        rect(this.position.x, this.position.y, this.rectHeight, this.rectWidth);
+        rect(this.position.x, this.position.y, this.radius * 2, this.radius * 2);
         this.rectCorner = (this.position.x - (this.rectHeight / 2)) - (this.rectWidth / 2);
         this.recovery();
     }
@@ -295,25 +273,32 @@ class Infector extends Molecule {
         }
         }
     }
-
     timeToQuarentine()
     {
-        const app = this;
+        let app = this;
         setTimeout(function () {
-        this.quarentined = true;
-         console.log("Time to qurentine" + this.quarentined);
-        },app.timeToInfection)
-
+        app.quarentined = true;
         
+        },app.timeToInfection)
     }
 
+    lerpColor(a, b, amount) { 
+        
+        var ah = parseInt(a.replace(/#/g, ''), 16),
+            ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+            bh = parseInt(b.replace(/#/g, ''), 16),
+            br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+            rr = ar + amount * (br - ar),
+            rg = ag + amount * (bg - ag),
+            rb = ab + amount * (bb - ab);
+    
+        return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
+    }
 
     recovery()
     {
         const app = this;
         setTimeout(function (duration) {
-        console.log("Start"); 
-        console.log(this.infectedDuration);
          molecules[app.arrayPosition] = new Recovered(app.arrayPosition); 
          molecules[app.arrayPosition].position = app.position;  
          molecules[app.arrayPosition].velocity =app.velocity;
@@ -322,10 +307,23 @@ class Infector extends Molecule {
         },app.infectedDuration)
     }
 
+    calculateTime() {
+        const start = this.dateNow
+        const end = start + this.timeToInfection
+        const now = new Date().getTime()
+        
+        return (now - start) / (end - start)
+    }
 
     render() {
-  
+        
         fill(51);
+        // console.log('whos a good boy', this.dateNow / this.dateNow + this.timeToInfection)
+        const colourLerp = this.quarentined
+        ? color(238, 210, 2, 200) // BABY LOVE MY BUTT VIV != REAL LOVE
+        : this.lerpColor('#add8e6', '#BDAC13', this.calculateTime())
+
+
         stroke(200, 200, 200);
         strokeWeight(3)
         fill(0, 50, 50, 125);
@@ -333,7 +331,7 @@ class Infector extends Molecule {
         push()
         translate(this.position.x, this.position.y);
         noStroke();
-        fill(238, 210, 2, 200);
+        fill(colourLerp);
         ellipse(0, 0, this.radius * 2, this.radius * 2);
         noStroke();
         fill(255, 255, 255, 255);
@@ -356,7 +354,6 @@ class Recovered extends Molecule {
         
         let otherMolecule = molecules[_indexValue];
         if (otherMolecule.constructor.name == "Healthy") {
-            console.log("Have a good day my dude you have not been inflected");
         }
         // else if (otherMolecule.constructor.name == "Infector"){
         //     window.clearTimeout(timeoutHandle);
